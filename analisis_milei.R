@@ -1,6 +1,6 @@
 library(tidyverse)
 
-milei <- read_csv('acap/milei.csv')
+milei <- read_csv('https://raw.githubusercontent.com/gastonbecerra/acap/main/milei.csv')
 
 glimpse(milei) # veamos la base
 

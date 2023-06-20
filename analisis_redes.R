@@ -1,6 +1,6 @@
 library(tidyverse)
 
-redes <- read_csv('acap/redes.csv')
+redes <- read_csv('https://github.com/gastonbecerra/acap/blob/main/redes.csv')
 
 glimpse(redes) # veamos la base
 

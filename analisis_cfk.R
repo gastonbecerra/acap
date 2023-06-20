@@ -1,6 +1,6 @@
 library(tidyverse)
 
-cfk <- read_csv('acap/cfk.csv')
+cfk <- read_csv('https://raw.githubusercontent.com/gastonbecerra/acap/main/cfk.csv')
 
 glimpse(cfk) # veamos la base
 
