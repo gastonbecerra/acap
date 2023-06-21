@@ -2,6 +2,8 @@ library(googlesheets4)
 library(tidyverse)
 library(readr)
 
+gs4_auth()
+
 limpiar <- function(texto) {
   # Convertir a minúsculas
   texto <- tolower(texto)
@@ -24,7 +26,6 @@ limpiar <- function(texto) {
   return(texto)
 }
 
-gs4_auth()
 
 # ai ---------------------
 
@@ -155,5 +156,24 @@ bd_argentina %>%
   rename(sexo = Sexo) %>%
   rename(edad = `¿Cuántos años tenés?`) %>%
   rename(nacionalidad = `¿Cuál es tu nacionalidad?`) %>%
-  select(id, time, orden, palabra, sexo, edad, edad, nacionalidad) %>%
+  select(id, time, orden, palabra, sexo, edad, nacionalidad) %>%
   write.csv('acap/argentina.csv')
+
+
+# eutanasia --------------------
+
+bd_eutanasia <- read_sheet("https://docs.google.com/spreadsheets/d/1Tm5w7qVoBvN1U8PdcbFeAvEnSOayKYGT2XOdAB1YguA")
+glimpse(bd_eutanasia)
+
+bd_eutanasia %>%
+  mutate(id = row_number() ) %>%
+  rename(time = Timestamp) %>%
+  pivot_longer(cols = 2:6,
+               names_to = "orden",
+               values_to = "palabra") %>%
+  mutate(palabra = limpiar(palabra)) %>%
+  mutate(orden = readr::parse_number(orden)) %>%
+  mutate(religion = limpiar(Religion)) %>%
+  rename(edad = Edad) %>%
+  select(id, time, orden, palabra, edad, religion) %>%
+  write.csv('acap/eutanasia.csv')
