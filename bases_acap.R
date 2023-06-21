@@ -50,7 +50,7 @@ bd_ai %>%
 bd_milei <- read_sheet("https://docs.google.com/spreadsheets/d/1J4e8T-OQDxGKaMI5qLN2I-6lSwqRd3o9jnsWkJQAOdk")
 glimpse(bd_milei)
 
-bd_milei$edad = toString(bd_milei$Edad)
+bd_milei$edad = bd_milei$Edad %>% unlist() %>% readr::parse_number()
 glimpse(bd_milei)
 
 bd_milei %>%
@@ -61,7 +61,6 @@ bd_milei %>%
                values_to = "palabra") %>%
   mutate(orden = readr::parse_number(orden)) %>%
   mutate(palabra = limpiar(palabra)) %>%
-  mutate(edad = readr::parse_number(edad)) %>%
   rename(genero = "Género") %>%
   mutate(genero = limpiar(genero)) %>%
   rename(ocupacion = "Ocupación") %>%
@@ -124,6 +123,37 @@ bd_cfk %>%
   rename(formacion = `formación académica`) %>%
   rename(partido = `partido político simpatizante o a quién pensas votar`) %>%
   rename(interes = `te interesa la política`) %>%
-  select(id, time, orden, palabra, genero, formacion, partido, interes) %>%
+  select(id, time, orden, palabra, genero, edad, formacion, partido, interes) %>%
   write.csv('acap/cfk.csv')
 
+
+# argentina --------------------
+
+bd_argentina <- read_sheet("https://docs.google.com/spreadsheets/d/1xSPuRNF4PnL6wsPM6dXP12u847KJujWXnDuQQLbEbe4")
+glimpse(bd_argentina)
+
+bd_argentina$p1 = bd_argentina$`Primera palabra:`
+bd_argentina$p2 = bd_argentina$`Segunda palabra:`
+bd_argentina$p3 = bd_argentina$`Tercera palabra:`
+bd_argentina$p4 = bd_argentina$`Cuarta palabra:`
+bd_argentina$p5 = bd_argentina$`Quinta palabra:`
+bd_argentina$`Primera palabra:` <- NULL
+bd_argentina$`Segunda palabra:` <- NULL
+bd_argentina$`Tercera palabra:` <- NULL
+bd_argentina$`Cuarta palabra:` <- NULL
+bd_argentina$`Quinta palabra:` <- NULL
+glimpse(bd_argentina)
+
+bd_argentina %>%
+  mutate(id = row_number() ) %>%
+  rename(time = `Marca temporal`) %>%
+  pivot_longer(cols = 5:9,
+               names_to = "orden",
+               values_to = "palabra") %>%
+  mutate(palabra = limpiar(palabra)) %>%
+  mutate(orden = readr::parse_number(orden)) %>%
+  rename(sexo = Sexo) %>%
+  rename(edad = `¿Cuántos años tenés?`) %>%
+  rename(nacionalidad = `¿Cuál es tu nacionalidad?`) %>%
+  select(id, time, orden, palabra, sexo, edad, edad, nacionalidad) %>%
+  write.csv('acap/argentina.csv')
