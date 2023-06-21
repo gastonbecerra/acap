@@ -1,12 +1,12 @@
 library(tidyverse)
 
-ai <- read_csv('https://raw.githubusercontent.com/gastonbecerra/acap/main/ai.csv')
+euta <- read_csv('https://raw.githubusercontent.com/gastonbecerra/acap/main/eutanasia.csv')
 
-glimpse(ai) # veamos la base
+glimpse(euta) # veamos la base
 
 # vamos a generar la tabla de asociaciones y el grafico -------------
 
-asociaciones <- ai %>%
+asociaciones <- euta %>%
   group_by(palabra) %>%
   summarize(
     freq = n(),
@@ -26,22 +26,28 @@ asociaciones %>%
   labs(y="Orden de evocación", x = "Frecuencia (log)") + # ponemos labels en los ejes
   theme_minimal() # borremos estilos innecesarios
 
-# vamos a cortar por ocupacion -------------
+# vamos a cortar por religion -------------
 
-table(ai$ocupacion)
+table(euta$religion)
 
-asociaciones_estudiantes <- ai %>%
-  filter(ocupacion == "estudiante") %>%
+# son un millon de opciones distintas... mejor no
+
+# vamos a cortar por edad -------------
+
+table(euta$edad)
+
+asociaciones_mayores <- euta %>%
+  filter(edad > 17) %>%
   group_by(palabra) %>%
   summarize(
     freq = n(),
     orden_media = mean(orden)
   )
 
-freq_cut = mean(asociaciones_estudiantes$freq)
-freq_orden = mean(asociaciones_estudiantes$orden_media)
+freq_cut = mean(asociaciones_mayores$freq)
+freq_orden = mean(asociaciones_mayores$orden_media)
 
-asociaciones_estudiantes %>%
+asociaciones_mayores %>%
   ggplot(aes(x=freq,y=orden_media,label=palabra)) + # frecuencia x orden
   scale_x_continuous(trans='log') + # vamos a aplicar una transformación al eje X para ver mejor los puntos
   geom_hline(yintercept = freq_orden , linetype = 2) + # cortamos por el valor medio
@@ -51,18 +57,18 @@ asociaciones_estudiantes %>%
   labs(y="Orden de evocación", x = "Frecuencia (log)") + # ponemos labels en los ejes
   theme_minimal() # borremos estilos innecesarios
 
-asociaciones_no_estudiantes <- ai %>%
-  filter(ocupacion != "estudiante") %>%
+asociaciones_menores <- euta %>%
+  filter(edad < 18) %>%
   group_by(palabra) %>%
   summarize(
     freq = n(),
     orden_media = mean(orden)
   )
 
-freq_cut = mean(asociaciones_no_estudiantes$freq)
-freq_orden = mean(asociaciones_no_estudiantes$orden_media)
+freq_cut = mean(asociaciones_menores$freq)
+freq_orden = mean(asociaciones_menores$orden_media)
 
-asociaciones_no_estudiantes %>%
+asociaciones_menores %>%
   ggplot(aes(x=freq,y=orden_media,label=palabra)) + # frecuencia x orden
   scale_x_continuous(trans='log') + # vamos a aplicar una transformación al eje X para ver mejor los puntos
   geom_hline(yintercept = freq_orden , linetype = 2) + # cortamos por el valor medio
